@@ -126,7 +126,7 @@
           const url = new URL(request.url);
           const path = url.pathname;
           if (path !== '/index.html' && path.indexOf('/index.html') !== -1) {
-            const dimensions = path.match(/\/(\d+)\s+x\s+(\d+)\//);
+            const dimensions = path.match(/\/(\d+)\s*x\s*(\d+)\//);
             if (dimensions) {
               const width = parseInt(dimensions[1], 10);
               const height = parseInt(dimensions[2], 10);
