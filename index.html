@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <style>
+    *,
+    *:before,
+    *:after {
+      box-sizing: border-box;
+    }
+    html,
+    body {
+      padding: 0;
+      margin: 0;
+      overflow: hidden;
+    }
+    body {
+      font-size: 0;
+    }
+    #banner {
+      border: 0;
+    }
+    #footer {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #333;
+    }
+    #previous,
+    #next {
+      padding: 3px 5px;
+      background-color: transparent;
+      border: none;
+      transition: background-color .25s ease-in-out;
+    }
+    #previous:focus,
+    #next:focus {
+      outline: none;
+    }
+    #previous:not(:disabled):hover,
+    #next:not(:disabled):hover {
+      background-color: rgba(255, 255, 255, .2);
+      cursor: pointer;
+    }
+    #previous svg,
+    #next svg {
+      width: 30px;
+      height: 30px;
+      fill: #fff;
+    }
+    #previous:disabled svg,
+    #next:disabled svg {
+      fill: #777;
+    }
+    #name-container {
+      position: relative;
+      flex-grow: 1;
+      color: #f8f8f8;
+      text-align: center;
+      font-size: 12px;
+    }
+    #names {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      max-width: 100%;
+      border: 0;
+      background-color: none;
+      padding: 0;
+      margin: 0;
+      font-size: 18px;
+    }
+    #name-container,
+    #names {
+      font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    }
+    #name-flex {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #name-arrow {
+      fill: #dadada;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <iframe id="banner" style="width: 0; height: 0"></iframe>
+    <div id="footer">
+        <button id="previous">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+          <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+        </svg>
+        </button>
+        <div id="name-container">
+          <select id="names"></select>
+          <div id="name-flex">
+            <span id="name">Loading...</span>
+            <svg id="name-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+              <path d="M7 10l5 5 5-5z"/>
+            </svg>
+          </div>
+        </div>
+        <button id="next">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+          <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+        </svg>
+        </button>
+    </div>
+  </div>
+  <script>
+    caches.open('static')
+      .then(function (cache) {
+        return cache.keys();
+      })
+      .then(function (requests) {
+        return requests.map(function (request) {
+          const url = new URL(request.url);
+          const path = url.pathname;
+          if (path !== '/index.html' && path.indexOf('/index.html') !== -1) {
+            const dimensions = path.match(/\/(\d+)\s+x\s+(\d+)\//);
+            const width = parseInt(dimensions[1], 10);
+            const height = parseInt(dimensions[2], 10);
+            return {
+              name: width + ' x ' + height,
+              dimensions: {
+                width,
+                height,
+              },
+              url: path,
+            };
+          }
+          return null;
+        });
+      })
+      .then(function (banners) {
+        return banners.filter(Boolean);
+      })
+      .then(init);
+
+    function init(banners) {
+      const $ = (selector) => document.querySelector(selector);
+      const _banner = $('#banner');
+      const _previous = $('#previous');
+      const _next = $('#next');
+      const _name = $('#name');
+      const _container = $('#container');
+      const _select = $('#names');
+
+      let index = 0;
+
+      function render() {
+        const banner = banners[index];
+
+        _banner.src = banner.url;
+        Object.assign(_banner.style, {
+          width: banner.dimensions.width + 'px',
+          height: banner.dimensions.height + 'px',
+        });
+
+        _name.textContent = banner.name;
+        _container.style.width = banner.dimensions.width + 'px';
+
+        _previous.disabled = index === 0;
+        _next.disabled = index + 1 === banners.length;
+
+        _select.value = banner.url;
+
+        updateHistory();
+      }
+
+      function navigate(modifier) {
+        index = index + modifier;
+        if (index < 0) {
+          index = banners.length - 1;
+        } else if (index >= banners.length) {
+          index = 0;
+        }
+        render();
+      }
+
+      function go(url) {
+        index = findIndexByUrl(url);
+        navigate(0);
+      }
+
+      function findIndexByUrl(url) {
+        let index = -1;
+        for (let i = 0; i < banners.length; i++) {
+          if (banners[i].url === url) {
+            index = i;
+            break;
+          }
+        }
+        return index;
+      }
+
+      function updateHistory() {
+        const banner = banners[index];
+        const oldUrl = location.pathname + location.hash;
+        const newUrl = location.pathname + '#' + banner.url;
+        if (oldUrl !== newUrl) {
+          history.pushState(null, null, location.pathname + '#' + banner.url);
+        }
+      }
+
+      if (location.hash) {
+        const url = location.hash.substring(1);
+        const _index = findIndexByUrl(url);
+        if (_index !== -1) {
+          index = _index;
+        }
+      }
+
+      const options = document.createDocumentFragment();
+      banners.forEach(function (banner) {
+        const option = document.createElement('option');
+        option.value = banner.url;
+        option.textContent = banner.name;
+        options.appendChild(option);
+      });
+      _select.appendChild(options);
+
+      render();
+
+      _previous.onclick = function () { navigate(-1) };
+      _next.onclick = function () { navigate(+1) };
+      _select.onchange = function () { go(_select.value) };
+    }
+  </script>
+</body>
+</html>
