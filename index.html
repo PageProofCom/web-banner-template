@@ -127,16 +127,18 @@
           const path = url.pathname;
           if (path !== '/index.html' && path.indexOf('/index.html') !== -1) {
             const dimensions = path.match(/\/(\d+)\s+x\s+(\d+)\//);
-            const width = parseInt(dimensions[1], 10);
-            const height = parseInt(dimensions[2], 10);
-            return {
-              name: width + ' x ' + height,
-              dimensions: {
-                width,
-                height,
-              },
-              url: path,
-            };
+            if (dimensions) {
+              const width = parseInt(dimensions[1], 10);
+              const height = parseInt(dimensions[2], 10);
+              return {
+                name: width + ' x ' + height,
+                dimensions: {
+                  width,
+                  height,
+                },
+                url: path,
+              };
+            }
           }
           return null;
         });
