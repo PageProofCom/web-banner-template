@@ -1,4 +1,4 @@
-<!-- 1 -->
+<!-- 2 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -125,13 +125,19 @@
         return requests.map(function (request) {
           const url = new URL(request.url);
           const path = url.pathname;
-          if (path !== '/index.html' && path.indexOf('/index.html') !== -1) {
-            const dimensions = path.match(/\/(\d+)\s*x\s*(\d+)\//);
+          if (path !== '/index.html' && endsWith(path, '.html')) {
+            const dimensions = decodeURIComponent(path).match(/\/(\d+)\s*x\s*(\d+)\//);
             if (dimensions) {
               const width = parseInt(dimensions[1], 10);
               const height = parseInt(dimensions[2], 10);
+              let name = width + ' x ' + height;
+              const group = name;
+              let pathname = path.substring(1, path.lastIndexOf('/'));
+              if (!endsWith(path, '/index.html')) {
+                name += ' (' + pathname + ')';
+              }
               return {
-                name: width + ' x ' + height,
+                name: name,
                 dimensions: {
                   width,
                   height,
@@ -147,6 +153,10 @@
         return banners.filter(Boolean);
       })
       .then(init);
+
+    function endsWith(str, end) {
+      return str.indexOf(end) === str.length - end.length;
+    }
 
     function init(banners) {
       const $ = (selector) => document.querySelector(selector);
