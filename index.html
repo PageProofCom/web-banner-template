@@ -1,10 +1,11 @@
-<!-- 2 -->
+<!-- 3 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://static-assets.pageproof.com/fonts/circular-pro.css" />
   <style>
     *,
     *:before,
@@ -15,105 +16,189 @@
     body {
       padding: 0;
       margin: 0;
-      overflow: hidden;
     }
-    body {
-      font-size: 0;
+    #header {
+      padding-top: 30px;
+      display: flex;
+      width: 100%;
     }
-    #banner {
+    #toggle:hover {
+      background-color: #0d5e28;
+    }
+    #toggle {
+      position: relative;
+      margin: auto;
+      padding: 10px 20px;
+      background-color: #138b3b;
+      font-weight: 700;
+      text-align: center;
+      text-transform: uppercase;
+      font-size: 14px;
+      color: #fff;
+      user-select: none;
+      appearance: none;
+      max-width: 100%;
+      text-decoration: none;
+      font-size: 14px;
+      line-height: 18px;
+      text-transform: uppercase;
+      font-weight: 700;
+      outline: 0;
+      cursor: pointer;
+      display: inline-block;
+      border-radius: 1px;
+      border: 1px solid transparent;
+      transition: transform .1s ease-in,-webkit-transform .1s ease-in;
+      letter-spacing: normal;
+    }
+    button,
+    .names,
+    .name,
+    .name-single {
+      font-size: medium;
+      font-family: 'Circular Pro', HelveticaNeue, 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, sans-serif;
+      color: #444;
+    }
+    #name-arrow {
+      fill: #444;
+      padding-right: 5px;
+    }
+    .banner {
       border: 0;
+      background: rgba(245,245,245,.9);
+      overflow-x: auto;
     }
     #footer {
-      width: 100%;
       display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #333;
+      justify-self: center;
+      margin-inline: auto;
+      margin-top: 15px;
+      max-width: 100%;
+      padding-bottom: 30px;
+    }
+    .flex-center-content {
+      display: flex;
+      justify-content: center;  
     }
     #previous,
     #next {
-      padding: 3px 5px;
+      padding-top: 5px;
       background-color: transparent;
       border: none;
       transition: background-color .25s ease-in-out;
     }
     #previous:focus,
-    #next:focus {
+    #next:focus,
+    #toggle:focus {
       outline: none;
     }
     #previous:not(:disabled):hover,
-    #next:not(:disabled):hover {
-      background-color: rgba(255, 255, 255, .2);
+    #next:not(:disabled):hover,
+    #name-container:hover {
+      background-color: #eee;
       cursor: pointer;
     }
     #previous svg,
     #next svg {
       width: 30px;
       height: 30px;
-      fill: #fff;
+      fill: #444;
     }
     #previous:disabled svg,
     #next:disabled svg {
-      fill: #777;
+      fill: #ccc;
     }
-    #name-container {
+    .name-container {
+      overflow: hidden;
+      max-width: 110px;
+    }
+    .name-container,
+    .names {
       position: relative;
       flex-grow: 1;
-      color: #f8f8f8;
-      text-align: center;
-      font-size: 12px;
+      height: 40px;
+      align-items: center;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     #names {
       position: absolute;
       top: 0;
       height: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      opacity: 0;
-      max-width: 100%;
-      border: 0;
       background-color: none;
+      border: 0;
+      opacity: 0;
       padding: 0;
       margin: 0;
-      font-size: 18px;
+      font-size: 16px;
     }
-    #name-container,
-    #names {
-      font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-    }
-    #name-flex {
+    .name,
+    .name-single {
       display: flex;
       align-items: center;
-      justify-content: center;
+      margin: auto;
     }
-    #name-arrow {
-      fill: #dadada;
+    .name-single {
+      padding-left: 10px;
+    }
+    #single-container,
+    #multi-container {
+      flex-wrap: wrap;
+    }
+    #multi-container .banner-container {
+      margin: 15px;
+    }
+    #single-container .banner-container {
+      margin-top: 15px;
+    }
+    .banner-container {
+      flex-direction: column;
+      overflow-x: auto;
+    }
+    #template {
+      display: none;
+    }
+    iframe {
+      margin-inline: auto;
     }
   </style>
 </head>
 <body>
   <div id="container">
-    <iframe id="banner" style="width: 0; height: 0"></iframe>
-    <div id="footer">
-        <button id="previous">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-          <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
-        </svg>
-        </button>
-        <div id="name-container">
-          <select id="names"></select>
-          <div id="name-flex">
-            <span id="name">Loading...</span>
+    <div id="header" class="flex-centre-content"><button id="toggle">VIEW INDIVIDUAL BANNERS</button></div>
+    <div id="single-container" class="flex-center-content" style="display: none">
+      <div id="single-banner-container" class="banner-container flex-center-content">
+        <iframe id="banner" class="banner"></iframe>
+        <div id="footer" class="flex-center-content">
+          <button id="previous">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+              <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+            </svg>
+          </button>
+          <div id="name-container" class="name-container flex-center-content">
+            <select id="names"></select>
+            <div id="name" class="name-single">Loading...</div>
             <svg id="name-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
               <path d="M7 10l5 5 5-5z"/>
             </svg>
           </div>
+          <button id="next">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+              <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+            </svg>
+          </button>
         </div>
-        <button id="next">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-          <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
-        </svg>
-        </button>
+      </div>
+    </div>
+    <div id="multi-container" class="flex-center-content"></div>
+
+    <div id="template" class="banner-container flex-center-content">
+      <iframe class="banner" style="width: 0; height: 0"></iframe>
+      <div class="flex-center-content">
+        <div class="name-container flex-center-content">
+          <div class="name"></div>
+        </div>
+      </div>
     </div>
   </div>
   <script>
@@ -159,14 +244,24 @@
     }
 
     function init(banners) {
+      let viewMode = 'multi';
+      const PADDING_WIDTH = 30;
+      const showMultiText = 'VIEW ALL';
+      const showSingleText = 'VIEW INDIVIDUAL BANNERS';
       const $ = (selector) => document.querySelector(selector);
       const _banner = $('#banner');
       const _previous = $('#previous');
       const _next = $('#next');
       const _name = $('#name');
       const _container = $('#container');
+      const _single_container = $('#single-container');
+      const _multi_container = $('#multi-container');
+      const _multi_banner_container = $('#multi-banner-container');
       const _select = $('#names');
+      const _template = $('#template');
+      const _toggle = $('#toggle');
 
+      let min_width = 0;
       let index = 0;
 
       function render() {
@@ -180,13 +275,43 @@
 
         _name.textContent = banner.name;
         _container.style.width = banner.dimensions.width + 'px';
+        Object.assign(_container.style, {
+          'min-width': banner.dimensions.width + 'px',
+        });
 
         _previous.disabled = index === 0;
         _next.disabled = index + 1 === banners.length;
-
+  
         _select.value = banner.url;
 
         updateHistory();
+      }
+
+      function renderAll() {
+
+        for (_index in banners) {
+          const template = _template.cloneNode(true);
+          const banner = banners[_index];
+          const [name] = banner.url.match(/(\d+)\s*x\s*(\d+)/);
+
+          template.querySelector('.name').textContent = banner.name;
+          template.style.width = banner.dimensions.width + 'px';
+          template.id = '';
+
+          const _current_banner = template.querySelector('iframe');
+          _current_banner.id = name;
+          _current_banner.src = banner.url;
+          Object.assign(_current_banner.style, {
+            width: banner.dimensions.width + 'px',
+            height: banner.dimensions.height + 'px',
+          });
+          min_width = banner.dimensions.width > min_width ? banner.dimensions.width : min_width;
+          _multi_container.appendChild(template);
+        }
+        Object.assign(_container.style, {
+          'min-width': min_width + PADDING_WIDTH + 'px',
+          width: '100%',
+        });
       }
 
       function navigate(modifier) {
@@ -242,10 +367,30 @@
       _select.appendChild(options);
 
       render();
+      renderAll();
 
+      _toggle.textContent = showSingleText;
       _previous.onclick = function () { navigate(-1) };
       _next.onclick = function () { navigate(+1) };
       _select.onchange = function () { go(_select.value) };
+      _toggle.onclick = function () {
+        viewMode = viewMode == 'single' ? 'multi' : 'single';
+        if (viewMode == 'multi') {
+          _toggle.textContent = showSingleText;
+          _single_container.style.display = "none";
+          _multi_container.style.display = "flex";
+          Object.assign(_container.style, {
+            'min-width': min_width + PADDING_WIDTH + 'px',
+            width: '100%',
+          });
+        }
+        else {
+          render();
+          _toggle.textContent = showMultiText;
+          _single_container.style.display = "flex";
+          _multi_container.style.display = "none";
+        }
+      };
     }
   </script>
 </body>
